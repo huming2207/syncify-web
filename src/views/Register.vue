@@ -1,19 +1,19 @@
 <template>
-  <div class="home">
+  <div class="register">
     <v-content>
-      <LoginForm />
+      <RegisterForm />
     </v-content>
   </div>
 </template>
 
 <script lang="ts">
 // @ is an alias to /src
-import LoginForm from "@/components/LoginForm.vue";
+import RegisterForm from "@/components/RegisterForm.vue";
 
 export default {
-  name: "Home",
+  name: "Register",
   components: {
-    LoginForm
+    RegisterForm
   }
 };
 </script>
