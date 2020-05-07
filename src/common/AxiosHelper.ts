@@ -1,4 +1,5 @@
 import { AxiosRequestConfig } from "axios";
+import { LOCAL_STORAGE_JWT } from "./constant";
 
 export const AxiosEncodedFormConfig: AxiosRequestConfig = {
   headers: {
@@ -6,4 +7,14 @@ export const AxiosEncodedFormConfig: AxiosRequestConfig = {
   }
 };
 
-export default AxiosEncodedFormConfig;
+export function loginWithJwt(): AxiosRequestConfig {
+  const token = localStorage.getItem(LOCAL_STORAGE_JWT);
+  if (token) {
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    };
+  }
+  return {};
+}
