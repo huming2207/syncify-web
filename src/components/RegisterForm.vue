@@ -61,18 +61,41 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer />
-              <v-btn color="primary">Create account</v-btn>
+              <v-btn color="primary" @click="submit()">Create account</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
       </v-row>
+      <v-dialog v-model="dialog" width="500">
+        <v-card>
+          <v-card-title class="headline grey lighten-2" primary-title>
+            {{ dialogTitle }}
+          </v-card-title>
+
+          <v-card-text>
+            {{ dialogText }}
+          </v-card-text>
+
+          <v-divider></v-divider>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" text @click="dialog = false">
+              Okay
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-container>
   </div>
 </template>
 <script>
 import Vue from "vue";
+import axios from "axios";
+import qs from "qs";
 import { required, email, min, max } from "vee-validate/dist/rules";
 import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from "vee-validate";
+import { AxiosEncodedFormConfig } from "../common/AxiosHelper";
 
 setInteractionMode("eager");
 
@@ -114,11 +137,38 @@ export default Vue.extend({
     username: "",
     email: "",
     password: "",
-    confirmation: ""
+    confirmation: "",
+    dialog: false,
+    dialogTitle: "",
+    dialogText: ""
   }),
   methods: {
     submit() {
-      this.$refs.observer.validate();
+      this.$refs.observer.validate().then(result => {
+        if (result) {
+          console.log("Correct");
+          axios
+            .post(
+              "/api/register",
+              qs.stringify({
+                username: this.username,
+                password: this.password,
+                email: this.email
+              }),
+              AxiosEncodedFormConfig
+            )
+            .then(resp => {
+              this.dialogText = resp.message;
+              this.dialogTitle = "Account created";
+              this.dialog = true;
+            })
+            .catch(err => {
+              this.dialogText = err.message;
+              this.dialogTitle = "Something went wrong";
+              this.dialog = true;
+            });
+        }
+      });
     },
     clear() {
       this.username = "";
