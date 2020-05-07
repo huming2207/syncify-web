@@ -68,7 +68,7 @@
       </v-row>
       <v-dialog v-model="dialog" width="500">
         <v-card>
-          <v-card-title class="headline grey lighten-2" primary-title>
+          <v-card-title class="headline">
             {{ dialogTitle }}
           </v-card-title>
 
@@ -76,11 +76,9 @@
             {{ dialogText }}
           </v-card-text>
 
-          <v-divider></v-divider>
-
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" text @click="dialog = false">
+            <v-btn color="primary" @click="closeDialog()">
               Okay
             </v-btn>
           </v-card-actions>
@@ -140,7 +138,8 @@ export default Vue.extend({
     confirmation: "",
     dialog: false,
     dialogTitle: "",
-    dialogText: ""
+    dialogText: "",
+    success: false
   }),
   methods: {
     submit() {
@@ -161,6 +160,7 @@ export default Vue.extend({
               this.dialogText = resp.data.message;
               this.dialogTitle = "Account created";
               this.dialog = true;
+              this.success = true;
             })
             .catch(err => {
               if (err && err.response) {
@@ -168,20 +168,20 @@ export default Vue.extend({
                 this.dialogText = resp.data.message;
                 this.dialogTitle = "Something went wrong...";
                 this.dialog = true;
+                this.success = false;
               } else {
                 this.dialogText = "Unknown error, please check your Internet connection";
                 this.dialogTitle = "Something went wrong...";
                 this.dialog = true;
+                this.success = false;
               }
             });
         }
       });
     },
-    clear() {
-      this.username = "";
-      this.email = "";
-      this.password = "";
-      this.$refs.observer.reset();
+    closeDialog() {
+      this.dialog = false;
+      if (this.success) this.$router.push({ path: "/" });
     }
   }
 });
