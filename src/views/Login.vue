@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="login">
     <v-content>
       <LoginForm />
     </v-content>
@@ -11,7 +11,7 @@
 import LoginForm from "@/components/LoginForm.vue";
 
 export default {
-  name: "Home",
+  name: "Login",
   components: {
     LoginForm
   }
