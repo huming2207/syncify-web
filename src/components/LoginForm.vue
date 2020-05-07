@@ -37,7 +37,7 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer />
-              <v-btn color="primary">Login</v-btn>
+              <v-btn color="primary" @click="performLogin()">Login</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -69,7 +69,7 @@ import axios from "axios";
 import qs from "qs";
 import { required, email, min, max } from "vee-validate/dist/rules";
 import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from "vee-validate";
-import { AxiosEncodedFormConfig, loginWithJwt } from "../common/AxiosHelper";
+import { AxiosEncodedFormConfig } from "../common/AxiosHelper";
 import { LOCAL_STORAGE_JWT } from "../common/constant";
 
 setInteractionMode("eager");
@@ -119,7 +119,7 @@ export default Vue.extend({
     performLogin() {
       axios
         .post(
-          "/api/auth/register",
+          "/api/auth/login",
           qs.stringify({
             username: this.username,
             password: this.password
