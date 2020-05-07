@@ -149,7 +149,7 @@ export default Vue.extend({
           console.log("Correct");
           axios
             .post(
-              "/api/register",
+              "/api/auth/register",
               qs.stringify({
                 username: this.username,
                 password: this.password,
@@ -158,14 +158,21 @@ export default Vue.extend({
               AxiosEncodedFormConfig
             )
             .then(resp => {
-              this.dialogText = resp.message;
+              this.dialogText = resp.data.message;
               this.dialogTitle = "Account created";
               this.dialog = true;
             })
             .catch(err => {
-              this.dialogText = err.message;
-              this.dialogTitle = "Something went wrong";
-              this.dialog = true;
+              if (err && err.response) {
+                const resp = err.response;
+                this.dialogText = resp.data.message;
+                this.dialogTitle = "Something went wrong...";
+                this.dialog = true;
+              } else {
+                this.dialogText = "Unknown error, please check your Internet connection";
+                this.dialogTitle = "Something went wrong...";
+                this.dialog = true;
+              }
             });
         }
       });
