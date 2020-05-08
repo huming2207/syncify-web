@@ -136,7 +136,7 @@ export default Vue.extend({
             const { token } = resp.data.data;
             console.log(token);
             localStorage.setItem(LOCAL_STORAGE_JWT, token);
-            this.$router.push({ path: "/" });
+            this.$router.push({ path: "/browser" });
           }
         })
         .catch(err => {
