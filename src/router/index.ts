@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
+import FileBrowser from "../views/Browser.vue";
 
 Vue.use(VueRouter);
 
@@ -15,6 +16,11 @@ const routes: Array<RouteConfig> = [
     path: "/register",
     name: "Register",
     component: Register
+  },
+  {
+    path: "/browser",
+    name: "Browser",
+    component: FileBrowser
   },
   {
     path: "/about",
