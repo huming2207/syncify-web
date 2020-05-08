@@ -1,22 +1,32 @@
 <template>
   <div class="fileBrowser">
     <v-container>
-      <v-data-table
-        :headers="headers"
-        :items="files"
-        :items-per-page="10"
-        class="elevation-1"
-      ></v-data-table>
+      <v-data-table :headers="headers" :items="files" :items-per-page="10" class="elevation-1">
+        <template v-slot:item.actions="{ item }">
+          <v-icon medium class="mr-4" @click="editItem(item)">
+            mdi-pencil
+          </v-icon>
+          <v-icon medium class="mr-3" @click="copyItem(item)">
+            mdi-content-copy
+          </v-icon>
+          <v-icon medium @click="deleteItem(item)">
+            mdi-delete
+          </v-icon>
+        </template>
+        <template v-slot:item.typeIcon="{ item }">
+          <v-icon x-large :color="item.type === 'Directory' ? 'yellow darken-2' : 'cyan darken-2'">
+            {{ item.type === "Directory" ? "mdi-folder" : "mdi-file-document" }}
+          </v-icon>
+        </template>
+      </v-data-table>
       <v-dialog v-model="dialog" width="500">
         <v-card>
           <v-card-title class="headline">
             {{ dialogTitle }}
           </v-card-title>
-
           <v-card-text>
             {{ dialogText }}
           </v-card-text>
-
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="primary" @click="closeDialog()">
@@ -37,12 +47,8 @@ import { loginWithJwt } from "../common/AxiosHelper";
 export default {
   data: () => ({
     headers: [
-      {
-        text: "Name",
-        align: "start",
-        sortable: true,
-        value: "name"
-      },
+      { text: "", value: "typeIcon", sortable: false },
+      { text: "Name", align: "start", sortable: true, value: "name" },
       { text: "Type", value: "type", sortable: true },
       { text: "Size", value: "size", sortable: true },
       { text: "Actions", value: "actions", sortable: false }
