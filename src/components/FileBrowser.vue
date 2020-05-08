@@ -1,7 +1,15 @@
 <template>
   <div class="fileBrowser">
     <v-container>
-      <v-data-table :headers="headers" :items="files" :items-per-page="10" class="elevation-1">
+      <v-data-table
+        :headers="headers"
+        :items="files"
+        :items-per-page="10"
+        class="elevation-1"
+        :key="tableRenderCounter"
+        @load="loadTable"
+        @click:row="handleItemClick"
+      >
         <template v-slot:item.actions="{ item }">
           <v-icon medium class="mr-4" @click="editItem(item)">
             mdi-pencil
@@ -57,59 +65,64 @@ export default {
     dialog: false,
     unauthorised: false,
     dialogTitle: "",
-    dialogText: ""
+    dialogText: "",
+    tableRenderCounter: 0
   }),
   mounted() {
-    const currPath = localStorage.getItem(LOCAL_STORAGE_PATH);
-    axios
-      .get("/api/path", {
-        params: {
-          path: currPath || "/"
-        },
-        ...loginWithJwt()
-      })
-      .then(resp => {
-        console.log(resp);
-        if (!resp.data.data) {
-          this.dialogText = "Please check your internet connection";
-          this.dialogTitle = "Something went wrong...";
-          this.dialog = true;
-        }
-
-        const { data } = resp.data;
-        data.files.forEach(element => {
-          this.files.push({ type: element.type, size: element.size, name: element.name });
-        });
-
-        data.dirs.forEach(element => {
-          this.files.push({ type: "Directory", size: 0, name: element.name });
-        });
-      })
-      .catch(err => {
-        if (err && err.response) {
-          const resp = err.response;
-          this.dialogText = resp.data.message;
-          this.dialogTitle = "Something went wrong...";
-          this.dialog = true;
-          this.unauthorised = resp.status === 401;
-        } else {
-          console.log(err);
-          this.dialogText = "Unknown error, please check your Internet connection";
-          this.dialogTitle = "Something went wrong...";
-          this.dialog = true;
-        }
-      });
-
-    this.$nextTick(() => {
-      // Code that will run only after the
-      // entire view has been rendered
-    });
+    this.loadTable();
   },
   methods: {
+    loadTable() {
+      const currPath = localStorage.getItem(LOCAL_STORAGE_PATH);
+      axios
+        .get("/api/path", {
+          params: {
+            path: currPath || "/"
+          },
+          ...loginWithJwt()
+        })
+        .then(resp => {
+          console.log(resp);
+          if (!resp.data.data) {
+            this.dialogText = "Please check your internet connection";
+            this.dialogTitle = "Something went wrong...";
+            this.dialog = true;
+          }
+
+          const { data } = resp.data;
+          data.files.forEach(element => {
+            this.files.push({ type: element.type, size: element.size, name: element.name });
+          });
+
+          data.dirs.forEach(element => {
+            this.files.push({ type: "Directory", size: 0, name: element.name });
+          });
+        })
+        .catch(err => {
+          if (err && err.response) {
+            const resp = err.response;
+            this.dialogText = resp.data.message;
+            this.dialogTitle = "Something went wrong...";
+            this.dialog = true;
+            this.unauthorised = resp.status === 401;
+          } else {
+            console.log(err);
+            this.dialogText = "Unknown error, please check your Internet connection";
+            this.dialogTitle = "Something went wrong...";
+            this.dialog = true;
+          }
+        });
+    },
     closeDialog() {
       this.dialog = false;
       if (this.unauthorised) this.$router.push({ path: "/" });
+    },
+    handleItemClick(item) {
+      console.log(item);
     }
+    // editItem(item) {},
+    // copyItem(item) {},
+    // deleteItem(item) {}
   }
 };
 </script>
