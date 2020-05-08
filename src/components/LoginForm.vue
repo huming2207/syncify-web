@@ -37,7 +37,8 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer />
-              <v-btn color="primary" @click="performLogin()">Login</v-btn>
+              <v-btn large color="success" @click="goToRegister()">Register</v-btn>
+              <v-btn large color="primary" @click="performLogin()">Login</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -153,6 +154,9 @@ export default Vue.extend({
     },
     closeDialog() {
       this.dialog = false;
+    },
+    goToRegister() {
+      this.$router.push({ path: "/register" });
     }
   }
 });

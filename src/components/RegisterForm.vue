@@ -61,7 +61,10 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer />
-              <v-btn color="primary" @click="submit()">Create account</v-btn>
+              <v-btn large color="normal" @click="goToLogin()">
+                Return to Login
+              </v-btn>
+              <v-btn large color="primary" @click="submit()">Create account</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -78,7 +81,7 @@
 
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="closeDialog()">
+            <v-btn large color="primary" @click="closeDialog()">
               Okay
             </v-btn>
           </v-card-actions>
@@ -182,6 +185,9 @@ export default Vue.extend({
     closeDialog() {
       this.dialog = false;
       if (this.success) this.$router.push({ path: "/" });
+    },
+    goToLogin() {
+      this.$router.push({ path: "/" });
     }
   }
 });
