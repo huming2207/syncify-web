@@ -61,7 +61,7 @@ export default {
       { text: "Size", value: "size", sortable: true },
       { text: "Actions", value: "actions", sortable: false }
     ],
-    files: [{ type: "Directory", size: 0, name: ".." }],
+    files: [{ type: "Directory", size: 0, name: ".." }], // Default ".." (parent) directory
     dialog: false,
     unauthorised: false,
     dialogTitle: "",
@@ -122,10 +122,14 @@ export default {
     handleItemClick(item) {
       const currPath = path.join(this.path || "/", item.name);
       if (item.type === "Directory") {
-        this.$router.push({
-          path: "/browser",
-          query: { path: currPath }
-        });
+        this.$router
+          .push({
+            path: "/browser",
+            query: { path: currPath }
+          })
+          .catch(() => {
+            return true; // Suppress errors here (useless)
+          });
       }
     }
     // editItem(item) {},
