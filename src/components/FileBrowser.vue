@@ -165,12 +165,6 @@ export default {
           ...loginWithJwt()
         });
 
-        if (!resp.data.data) {
-          this.errorDialogText = "Please check your internet connection";
-          this.errorDialogTitle = "Something went wrong...";
-          this.errorDialog = true;
-        }
-
         const { data } = resp.data;
         data.files.forEach(element => {
           this.files.push({ type: element.type, size: element.size, name: element.name });
@@ -180,18 +174,22 @@ export default {
           this.files.push({ type: "Directory", size: 0, name: element.name });
         });
       } catch (err) {
-        if (err.response) {
-          const resp = err.response;
-          this.errorDialogText = resp.data.message;
-          this.errorDialogTitle = "Something went wrong...";
-          this.errorDialog = true;
-          this.unauthorised = resp.status === 401;
-        } else {
-          console.error(err);
-          this.errorDialogText = "Unknown error, please check your Internet connection";
-          this.errorDialogTitle = "Something went wrong...";
-          this.errorDialog = true;
-        }
+        this.showErrorDialog(err);
+      }
+    },
+    showErrorDialog(err) {
+      if (err.response) {
+        const resp = err.response;
+        this.errorDialogText =
+          resp.data.message || "Unknown error, please check your Internet connection";
+        this.errorDialogTitle = "Something went wrong...";
+        this.errorDialog = true;
+        this.unauthorised = resp.status === 401;
+      } else {
+        console.error(err);
+        this.errorDialogText = "Unknown error, please check your Internet connection";
+        this.errorDialogTitle = "Something went wrong...";
+        this.errorDialog = true;
       }
     },
     closeDialog() {
