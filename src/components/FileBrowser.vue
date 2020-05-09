@@ -61,7 +61,7 @@ export default {
       { text: "Size", value: "size", sortable: true },
       { text: "Actions", value: "actions", sortable: false }
     ],
-    files: [],
+    files: [{ type: "Directory", size: 0, name: ".." }],
     dialog: false,
     unauthorised: false,
     dialogTitle: "",
@@ -75,46 +75,45 @@ export default {
     this.loadTable();
   },
   methods: {
-    loadTable() {
+    async loadTable() {
       const currPath = this.path || "/";
-      axios
-        .get("/api/path", {
+      try {
+        const resp = await axios.get("/api/path", {
           params: {
             path: currPath
           },
           ...loginWithJwt()
-        })
-        .then(resp => {
-          console.log(resp);
-          if (!resp.data.data) {
-            this.dialogText = "Please check your internet connection";
-            this.dialogTitle = "Something went wrong...";
-            this.dialog = true;
-          }
-
-          const { data } = resp.data;
-          data.files.forEach(element => {
-            this.files.push({ type: element.type, size: element.size, name: element.name });
-          });
-
-          data.dirs.forEach(element => {
-            this.files.push({ type: "Directory", size: 0, name: element.name });
-          });
-        })
-        .catch(err => {
-          if (err && err.response) {
-            const resp = err.response;
-            this.dialogText = resp.data.message;
-            this.dialogTitle = "Something went wrong...";
-            this.dialog = true;
-            this.unauthorised = resp.status === 401;
-          } else {
-            console.log(err);
-            this.dialogText = "Unknown error, please check your Internet connection";
-            this.dialogTitle = "Something went wrong...";
-            this.dialog = true;
-          }
         });
+
+        console.log(resp);
+        if (!resp.data.data) {
+          this.dialogText = "Please check your internet connection";
+          this.dialogTitle = "Something went wrong...";
+          this.dialog = true;
+        }
+
+        const { data } = resp.data;
+        data.files.forEach(element => {
+          this.files.push({ type: element.type, size: element.size, name: element.name });
+        });
+
+        data.dirs.forEach(element => {
+          this.files.push({ type: "Directory", size: 0, name: element.name });
+        });
+      } catch (err) {
+        if (err && err.response) {
+          const resp = err.response;
+          this.dialogText = resp.data.message;
+          this.dialogTitle = "Something went wrong...";
+          this.dialog = true;
+          this.unauthorised = resp.status === 401;
+        } else {
+          console.log(err);
+          this.dialogText = "Unknown error, please check your Internet connection";
+          this.dialogTitle = "Something went wrong...";
+          this.dialog = true;
+        }
+      }
     },
     closeDialog() {
       this.dialog = false;
