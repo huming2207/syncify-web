@@ -101,16 +101,23 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+      <v-snackbar v-model="msgBar" :timeout="5000">
+        {{ msgBarText }}
+        <v-btn color="blue" text @click="msgBar = false">
+          Close
+        </v-btn>
+      </v-snackbar>
     </v-container>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import qs from "qs";
 import path from "path";
 import vue2Dropzone from "vue2-dropzone";
 import "vue2-dropzone/dist/vue2Dropzone.min.css";
-import { loginWithJwt } from "../common/AxiosHelper";
+import { loginWithJwt, AxiosEncodedFormConfig } from "../common/AxiosHelper";
 
 export default {
   components: {
@@ -125,15 +132,16 @@ export default {
       { text: "Actions", value: "actions", sortable: false }
     ],
     files: [],
-    errorDialog: false,
     unauthorised: false,
+    uploadDialog: false,
+    newDirDialog: false,
+    errorDialog: false,
     errorDialogTitle: "",
     errorDialogText: "",
     tableRenderCounter: 0,
-    uploadDialog: false,
-    newDirDialog: false,
-    chosenFile: null,
     newDirName: "",
+    msgBar: false,
+    msgBarText: "",
     dropzoneOptions: {
       url: "/api/file",
       thumbnailWidth: 100,
@@ -216,10 +224,25 @@ export default {
       await this.loadTable();
       this.$refs.dropzone.removeAllFiles();
       this.uploadDialog = false;
-      this.tableRenderCounter += 1;
     },
-    createNewDir() {
-      console.log(this.chosenFile);
+    async createNewDir() {
+      console.log(this.newDirName);
+      const currPath = path.join(this.path || "/", this.newDirName);
+      try {
+        const resp = await axios.post(
+          "/api/path",
+          qs.stringify({
+            path: currPath
+          }),
+          { headers: { ...AxiosEncodedFormConfig.headers, ...loginWithJwt().headers } }
+        );
+        this.msgBarText = resp.data.message || "Directory created";
+        this.msgBar = true;
+        this.newDirDialog = false;
+        await this.loadTable();
+      } catch (err) {
+        this.showErrorDialog(err);
+      }
     }
     // editItem(item) {},
     // copyItem(item) {},
