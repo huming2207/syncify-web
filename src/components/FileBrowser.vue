@@ -49,7 +49,7 @@
 
 <script>
 import axios from "axios";
-import { LOCAL_STORAGE_PATH } from "../common/constant";
+import path from "path";
 import { loginWithJwt } from "../common/AxiosHelper";
 
 export default {
@@ -68,16 +68,19 @@ export default {
     dialogText: "",
     tableRenderCounter: 0
   }),
+  props: {
+    path: String
+  },
   mounted() {
     this.loadTable();
   },
   methods: {
     loadTable() {
-      const currPath = localStorage.getItem(LOCAL_STORAGE_PATH);
+      const currPath = this.path || "/";
       axios
         .get("/api/path", {
           params: {
-            path: currPath || "/"
+            path: currPath
           },
           ...loginWithJwt()
         })
@@ -118,7 +121,13 @@ export default {
       if (this.unauthorised) this.$router.push({ path: "/" });
     },
     handleItemClick(item) {
-      console.log(item);
+      const currPath = path.join(this.path || "/", item.name);
+      if (item.type === "Directory") {
+        this.$router.push({
+          path: "/browser",
+          query: { path: currPath }
+        });
+      }
     }
     // editItem(item) {},
     // copyItem(item) {},

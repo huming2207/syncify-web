@@ -1,7 +1,7 @@
 <template>
   <div class="browser">
     <v-content>
-      <FileBrowser />
+      <FileBrowser :path="this.$route.query.path" :key="this.$route.query.path" />
     </v-content>
   </div>
 </template>
