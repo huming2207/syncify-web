@@ -165,7 +165,6 @@ export default {
           ...loginWithJwt()
         });
 
-        console.log(resp);
         if (!resp.data.data) {
           this.errorDialogText = "Please check your internet connection";
           this.errorDialogTitle = "Something went wrong...";
@@ -181,14 +180,14 @@ export default {
           this.files.push({ type: "Directory", size: 0, name: element.name });
         });
       } catch (err) {
-        if (err && err.response) {
+        if (err.response) {
           const resp = err.response;
           this.errorDialogText = resp.data.message;
           this.errorDialogTitle = "Something went wrong...";
           this.errorDialog = true;
           this.unauthorised = resp.status === 401;
         } else {
-          console.log(err);
+          console.error(err);
           this.errorDialogText = "Unknown error, please check your Internet connection";
           this.errorDialogTitle = "Something went wrong...";
           this.errorDialog = true;
@@ -213,7 +212,6 @@ export default {
       }
     },
     updateDropzoneUrl() {
-      console.log(this.$refs.dropzone);
       this.$refs.dropzone.setOption("url", `/api/file?path=${this.path}`);
     },
     async finishFileUpload() {
