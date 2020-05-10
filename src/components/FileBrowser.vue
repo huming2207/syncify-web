@@ -268,8 +268,28 @@ export default {
         this.showErrorDialog(err);
       }
     },
-    deleteItem(item) {
-      console.log(item);
+    async deleteItem(item) {
+      const currPath = path.join(this.path || "/", item.name);
+      try {
+        const resp = await axios.delete(item.type === "Directory" ? "/api/path" : "/api/file", {
+          headers: { ...AxiosEncodedFormConfig.headers, ...loginWithJwt().headers },
+          data: qs.stringify(
+            item.type === "Directory"
+              ? {
+                  path: currPath
+                }
+              : {
+                  file: currPath
+                }
+          )
+        });
+        this.msgBarText = resp.data.message || "Item deleted";
+        this.msgBar = true;
+        this.newDirDialog = false;
+        await this.loadTable();
+      } catch (err) {
+        this.showErrorDialog(err);
+      }
     }
     // editItem(item) {},
     // copyItem(item) {},
