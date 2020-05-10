@@ -7,7 +7,6 @@
         :items-per-page="10"
         class="elevation-1"
         :key="tableRenderCounter"
-        @click:row="handleItemClick"
       >
         <template v-slot:top>
           <v-toolbar flat color="white">
@@ -69,18 +68,31 @@
           </v-toolbar>
         </template>
         <template v-slot:item.actions="{ item }">
-          <v-icon medium class="mr-4" @click="editItem(item)">
+          <v-icon medium class="mr-2" @click="openItem(item)">
+            mdi-arrow-right-bold-box
+          </v-icon>
+          <v-icon medium class="mr-2" @click="editItem(item)">
             mdi-pencil
           </v-icon>
-          <v-icon medium class="mr-3" @click="copyItem(item)">
+          <v-icon medium class="mr-2" @click="copyItem(item)">
             mdi-content-copy
           </v-icon>
-          <v-icon medium @click="deleteItem(item)">
+          <v-icon medium class="mr-2" @click="deleteItem(item)">
             mdi-delete
           </v-icon>
         </template>
+        <template v-slot:item.name="{ item }">
+          <a v-on:click="openItem(item)">{{ item.name }}</a>
+        </template>
+        <template v-slot:item.type="{ item }" @click.native="openItem(item)">{{
+          item.type
+        }}</template>
         <template v-slot:item.typeIcon="{ item }">
-          <v-icon x-large :color="item.type === 'Directory' ? 'yellow darken-2' : 'cyan darken-2'">
+          <v-icon
+            @click="openItem(item)"
+            x-large
+            :color="item.type === 'Directory' ? 'yellow darken-2' : 'cyan darken-2'"
+          >
             {{ item.type === "Directory" ? "mdi-folder" : "mdi-file-document" }}
           </v-icon>
         </template>
@@ -125,8 +137,8 @@ export default {
   },
   data: () => ({
     headers: [
-      { text: "", value: "typeIcon", sortable: false },
-      { text: "Name", align: "start", sortable: true, value: "name" },
+      { text: "", align: "center", value: "typeIcon", sortable: false },
+      { text: "Name", sortable: true, value: "name" },
       { text: "Type", value: "type", sortable: true },
       { text: "Size", value: "size", sortable: true },
       { text: "Actions", value: "actions", sortable: false }
@@ -175,11 +187,23 @@ export default {
 
         const { data } = resp.data;
         data.files.forEach(element => {
-          this.files.push({ type: element.type, size: element.size, name: element.name });
+          this.files.push({
+            type: element.type,
+            size: element.size,
+            name: element.name,
+            // eslint-disable-next-line no-underscore-dangle
+            id: element._id
+          });
         });
 
         data.dirs.forEach(element => {
-          this.files.push({ type: "Directory", size: 0, name: element.name });
+          this.files.push({
+            type: "Directory",
+            size: 0,
+            name: element.name,
+            // eslint-disable-next-line no-underscore-dangle
+            id: element._id
+          });
         });
       } catch (err) {
         this.showErrorDialog(err);
@@ -204,7 +228,7 @@ export default {
       this.errorDialog = false;
       if (this.unauthorised) this.$router.push({ path: "/" });
     },
-    handleItemClick(item) {
+    openItem(item) {
       const currPath = path.join(this.path || "/", item.name);
       if (item.type === "Directory") {
         this.$router
@@ -243,10 +267,12 @@ export default {
       } catch (err) {
         this.showErrorDialog(err);
       }
+    },
+    deleteItem(item) {
+      console.log(item);
     }
     // editItem(item) {},
     // copyItem(item) {},
-    // deleteItem(item) {}
   }
 };
 </script>
