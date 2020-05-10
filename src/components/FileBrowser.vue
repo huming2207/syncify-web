@@ -68,18 +68,29 @@
           </v-toolbar>
         </template>
         <template v-slot:item.actions="{ item }">
-          <v-icon medium class="mr-2" @click="openItem(item)">
-            mdi-arrow-right-bold-box
-          </v-icon>
-          <v-icon medium class="mr-2" @click="editItem(item)">
-            mdi-pencil
-          </v-icon>
-          <v-icon medium class="mr-2" @click="copyItem(item)">
-            mdi-content-copy
-          </v-icon>
-          <v-icon medium class="mr-2" @click="deleteItem(item)">
-            mdi-delete
-          </v-icon>
+          <div class="d-inline-flex">
+            <v-icon medium class="mr-2" @click="openItem(item)">
+              mdi-arrow-right-bold-box
+            </v-icon>
+            <v-edit-dialog
+              v-model="nameEditDialog"
+              :return-value.sync="item.name"
+              @save="editItem(item)"
+            >
+              <v-icon medium class="mr-2">
+                mdi-pencil
+              </v-icon>
+              <template v-slot:input>
+                <v-text-field v-model="item.name" label="Edit" single-line counter></v-text-field>
+              </template>
+            </v-edit-dialog>
+            <v-icon medium class="mr-2" @click="copyItem(item)">
+              mdi-content-copy
+            </v-icon>
+            <v-icon medium class="mr-2" @click="deleteItem(item)">
+              mdi-delete
+            </v-icon>
+          </div>
         </template>
         <template v-slot:item.name="{ item }">
           <a v-on:click="openItem(item)">{{ item.name }}</a>
@@ -272,8 +283,10 @@ export default {
       } catch (err) {
         this.showErrorDialog(err);
       }
+    },
+    editItem(item) {
+      this.nameEditDialog = false;
     }
-    // editItem(item) {},
     // copyItem(item) {},
   }
 };
