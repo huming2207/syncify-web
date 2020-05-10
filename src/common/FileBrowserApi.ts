@@ -1,0 +1,40 @@
+import axios, { AxiosResponse } from "axios";
+import qs from "qs";
+import { loginWithJwt, AxiosEncodedFormConfig } from "./AxiosHelper";
+
+export async function listDirectory(currPath: string): Promise<AxiosResponse> {
+  return axios.get("/api/path", {
+    params: {
+      path: currPath
+    },
+    ...loginWithJwt()
+  });
+}
+
+export async function createNewDirectory(path: string): Promise<AxiosResponse> {
+  return axios.post(
+    "/api/path",
+    qs.stringify({
+      path
+    }),
+    { headers: { ...AxiosEncodedFormConfig.headers, ...loginWithJwt().headers } }
+  );
+}
+
+export async function deleteDirectory(path: string): Promise<AxiosResponse> {
+  return axios.delete("/api/path", {
+    headers: { ...AxiosEncodedFormConfig.headers, ...loginWithJwt().headers },
+    data: qs.stringify({
+      path
+    })
+  });
+}
+
+export async function deleteFile(path: string): Promise<AxiosResponse> {
+  return axios.delete("/api/file", {
+    headers: { ...AxiosEncodedFormConfig.headers, ...loginWithJwt().headers },
+    data: qs.stringify({
+      file: path
+    })
+  });
+}

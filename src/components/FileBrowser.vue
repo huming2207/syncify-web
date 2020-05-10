@@ -124,12 +124,16 @@
 </template>
 
 <script>
-import axios from "axios";
-import qs from "qs";
 import path from "path";
 import vue2Dropzone from "vue2-dropzone";
 import "vue2-dropzone/dist/vue2Dropzone.min.css";
-import { loginWithJwt, AxiosEncodedFormConfig } from "../common/AxiosHelper";
+import {
+  listDirectory,
+  createNewDirectory,
+  deleteFile,
+  deleteDirectory
+} from "../common/FileBrowserApi";
+import { loginWithJwt } from "../common/AxiosHelper";
 
 export default {
   components: {
@@ -178,13 +182,7 @@ export default {
       this.files.push({ type: "Directory", size: 0, name: ".." }); // Add the ".." (to parent directory)
       const currPath = this.path || "/";
       try {
-        const resp = await axios.get("/api/path", {
-          params: {
-            path: currPath
-          },
-          ...loginWithJwt()
-        });
-
+        const resp = await listDirectory(currPath);
         const { data } = resp.data;
         data.files.forEach(element => {
           this.files.push({
@@ -253,13 +251,7 @@ export default {
       console.log(this.newDirName);
       const currPath = path.join(this.path || "/", this.newDirName);
       try {
-        const resp = await axios.post(
-          "/api/path",
-          qs.stringify({
-            path: currPath
-          }),
-          { headers: { ...AxiosEncodedFormConfig.headers, ...loginWithJwt().headers } }
-        );
+        const resp = await createNewDirectory(currPath);
         this.msgBarText = resp.data.message || "Directory created";
         this.msgBar = true;
         this.newDirDialog = false;
@@ -271,18 +263,8 @@ export default {
     async deleteItem(item) {
       const currPath = path.join(this.path || "/", item.name);
       try {
-        const resp = await axios.delete(item.type === "Directory" ? "/api/path" : "/api/file", {
-          headers: { ...AxiosEncodedFormConfig.headers, ...loginWithJwt().headers },
-          data: qs.stringify(
-            item.type === "Directory"
-              ? {
-                  path: currPath
-                }
-              : {
-                  file: currPath
-                }
-          )
-        });
+        const resp =
+          item.type === "Directory" ? await deleteDirectory(currPath) : await deleteFile(currPath);
         this.msgBarText = resp.data.message || "Item deleted";
         this.msgBar = true;
         this.newDirDialog = false;
