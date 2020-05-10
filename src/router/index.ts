@@ -10,24 +10,25 @@ const routes: Array<RouteConfig> = [
   {
     path: "/",
     name: "Login",
+    meta: { title: "Login - Syncify" },
     component: Login
   },
   {
     path: "/register",
     name: "Register",
+    meta: { title: "Register - Syncify" },
     component: Register
   },
   {
     path: "/browser",
     name: "Browser",
+    meta: { title: "File browser - Syncify" },
     component: FileBrowser
   },
   {
     path: "/about",
     name: "About",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
+    meta: { title: "About - Syncify" },
     component: () => import(/* webpackChunkName: "about" */ "../views/About.vue")
   }
 ];
