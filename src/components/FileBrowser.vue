@@ -72,16 +72,12 @@
             <v-icon medium class="mr-2" @click="openItem(item)">
               mdi-arrow-right-bold-box
             </v-icon>
-            <v-edit-dialog
-              v-model="nameEditDialog"
-              :return-value.sync="item.name"
-              @save="editItem(item)"
-            >
+            <v-edit-dialog :set="(newName = '')" @save="editItem(item, newName)">
               <v-icon medium class="mr-2">
                 mdi-pencil
               </v-icon>
               <template v-slot:input>
-                <v-text-field v-model="item.name" label="Edit" single-line counter></v-text-field>
+                <v-text-field v-model="newName" label="Rename" single-line counter></v-text-field>
               </template>
             </v-edit-dialog>
             <v-icon medium class="mr-2" @click="copyItem(item)">
@@ -142,7 +138,8 @@ import {
   listDirectory,
   createNewDirectory,
   deleteFile,
-  deleteDirectory
+  deleteDirectory,
+  moveDirectory
 } from "../common/FileBrowserApi";
 import { loginWithJwt } from "../common/AxiosHelper";
 
@@ -284,8 +281,19 @@ export default {
         this.showErrorDialog(err);
       }
     },
-    editItem(item) {
-      this.nameEditDialog = false;
+    async editItem(item, newName) {
+      const destPath = path.join(this.path || "/", newName);
+      const origPath = path.join(this.path || "/", item.name);
+      try {
+        if (item.type !== "Directory") throw new Error("Renaming files is not supported for now");
+        const resp = await moveDirectory(origPath, destPath);
+        this.msgBarText = resp.data.message || "Item renamed";
+        this.msgBar = true;
+        this.newDirDialog = false;
+        await this.loadTable();
+      } catch (err) {
+        this.showErrorDialog(err);
+      }
     }
     // copyItem(item) {},
   }
