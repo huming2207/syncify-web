@@ -38,3 +38,16 @@ export async function deleteFile(path: string): Promise<AxiosResponse> {
     })
   });
 }
+
+export async function moveDirectory(orig: string, dest: string): Promise<AxiosResponse> {
+  return axios.put(
+    "/api/path/move",
+    qs.stringify({
+      orig,
+      dest
+    }),
+    {
+      headers: { ...AxiosEncodedFormConfig.headers, ...loginWithJwt().headers }
+    }
+  );
+}
