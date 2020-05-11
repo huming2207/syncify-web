@@ -51,3 +51,19 @@ export async function moveDirectory(orig: string, dest: string): Promise<AxiosRe
     }
   );
 }
+
+export async function downloadFile(currPath: string, type: string, name: string): Promise<void> {
+  const resp = await axios.get("/api/file", {
+    params: {
+      path: currPath
+    },
+    responseType: "blob",
+    ...loginWithJwt()
+  });
+
+  const blob = new Blob([resp.data], { type });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = name;
+  link.click();
+}
