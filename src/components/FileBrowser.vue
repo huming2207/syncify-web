@@ -139,7 +139,8 @@ import {
   createNewDirectory,
   deleteFile,
   deleteDirectory,
-  moveDirectory
+  moveDirectory,
+  downloadFile
 } from "../common/FileBrowserApi";
 import { loginWithJwt } from "../common/AxiosHelper";
 
@@ -234,7 +235,7 @@ export default {
       this.errorDialog = false;
       if (this.unauthorised) this.$router.push({ path: "/" });
     },
-    openItem(item) {
+    async openItem(item) {
       const currPath = path.join(this.path || "/", item.name);
       if (item.type === "Directory") {
         this.$router
@@ -245,6 +246,12 @@ export default {
           .catch(() => {
             return true; // Suppress errors here (useless)
           });
+      } else {
+        try {
+          await downloadFile(currPath, item.type, item.name);
+        } catch (err) {
+          this.showErrorDialog(err);
+        }
       }
     },
     updateDropzoneUrl() {
