@@ -103,6 +103,32 @@ export class SyncifyApiClient {
     );
   };
 
+  public copyFile = async (orig: string, dest: string): Promise<AxiosResponse> => {
+    return axios.put(
+      "/api/file/copy",
+      qs.stringify({
+        orig,
+        dest
+      }),
+      {
+        headers: { ...this.encodedFormConfig.headers, ...SyncifyApiClient.loginWithJwt().headers }
+      }
+    );
+  };
+
+  public moveFile = async (orig: string, dest: string): Promise<AxiosResponse> => {
+    return axios.put(
+      "/api/file/move",
+      qs.stringify({
+        orig,
+        dest
+      }),
+      {
+        headers: { ...this.encodedFormConfig.headers, ...SyncifyApiClient.loginWithJwt().headers }
+      }
+    );
+  };
+
   public downloadFile = async (currPath: string, type: string, name: string): Promise<void> => {
     const resp = await axios.get("/api/file", {
       params: {
