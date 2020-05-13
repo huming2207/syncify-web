@@ -15,8 +15,8 @@
             <v-spacer></v-spacer>
             <v-dialog v-model="uploadDialog" max-width="500px">
               <template v-slot:activator="{ on }">
-                <v-btn color="primary" dark class="mb-2" v-on="on">
-                  <v-icon left>mdi-cloud-upload</v-icon> Upload files
+                <v-btn color="primary" dark class="mb-2 text-center" v-on="on">
+                  <v-icon>mdi-cloud-upload</v-icon>
                 </v-btn>
               </template>
               <v-card>
@@ -41,8 +41,8 @@
             </v-dialog>
             <v-dialog v-model="newDirDialog" max-width="500px">
               <template v-slot:activator="{ on }">
-                <v-btn color="success" dark class="mb-2 ml-2" v-on="on">
-                  <v-icon left>mdi-folder-plus</v-icon> New directory
+                <v-btn color="success" dark class="mb-2 ml-2 text-center" v-on="on">
+                  <v-icon>mdi-folder-plus</v-icon>
                 </v-btn>
               </template>
               <v-card>
