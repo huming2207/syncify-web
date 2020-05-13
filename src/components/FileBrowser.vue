@@ -134,6 +134,8 @@
 import path from "path";
 import vue2Dropzone from "vue2-dropzone";
 import "vue2-dropzone/dist/vue2Dropzone.min.css";
+import { DateTime } from "luxon";
+import filesize from "filesize";
 import { SyncifyApiClient } from "../common/SyncifyApiClient";
 
 export default {
@@ -190,8 +192,10 @@ export default {
         data.files.forEach(element => {
           this.files.push({
             type: element.type,
-            size: element.size,
+            size: filesize(element.size),
             name: element.name,
+            created: DateTime.fromISO(element.created).toRelative(),
+            updated: DateTime.fromISO(element.updated).toRelative(),
             // eslint-disable-next-line no-underscore-dangle
             id: element._id
           });
@@ -202,6 +206,8 @@ export default {
             type: "Directory",
             size: 0,
             name: element.name,
+            created: DateTime.fromISO(element.created).toRelative(),
+            updated: DateTime.fromISO(element.updated).toRelative(),
             // eslint-disable-next-line no-underscore-dangle
             id: element._id
           });
