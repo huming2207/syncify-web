@@ -146,6 +146,8 @@ export default {
       { text: "Name", sortable: true, value: "name" },
       { text: "Type", value: "type", sortable: true },
       { text: "Size", value: "size", sortable: true },
+      { text: "Last updated at", value: "updated", sortable: true },
+      { text: "Created at", value: "created", sortable: true },
       { text: "Actions", value: "actions", sortable: false }
     ],
     files: [],
@@ -286,8 +288,12 @@ export default {
       const destPath = path.join(this.path || "/", newName);
       const origPath = path.join(this.path || "/", item.name);
       try {
-        if (item.type !== "Directory") throw new Error("Renaming files is not supported for now");
-        const resp = await this.$api.moveDirectory(origPath, destPath);
+        let resp = null;
+        if (item.type !== "Directory") {
+          resp = await this.$api.moveFile(origPath, destPath);
+        } else {
+          resp = await this.$api.moveDirectory(origPath, destPath);
+        }
         this.msgBarText = resp.data.message || "Item renamed";
         this.msgBar = true;
         this.newDirDialog = false;
