@@ -92,11 +92,8 @@
 </template>
 <script>
 import Vue from "vue";
-import axios from "axios";
-import qs from "qs";
 import { required, email, min, max } from "vee-validate/dist/rules";
 import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from "vee-validate";
-import { AxiosEncodedFormConfig } from "../common/AxiosHelper";
 
 setInteractionMode("eager");
 
@@ -145,20 +142,11 @@ export default Vue.extend({
     success: false
   }),
   methods: {
-    submit() {
+    async submit() {
       this.$refs.observer.validate().then(result => {
         if (result) {
-          console.log("Correct");
-          axios
-            .post(
-              "/api/auth/register",
-              qs.stringify({
-                username: this.username,
-                password: this.password,
-                email: this.email
-              }),
-              AxiosEncodedFormConfig
-            )
+          this.$api
+            .registerUser(this.username, this.password, this.email)
             .then(resp => {
               this.dialogText = resp.data.message;
               this.dialogTitle = "Account created";

@@ -66,12 +66,8 @@
 </template>
 <script>
 import Vue from "vue";
-import axios from "axios";
-import qs from "qs";
 import { required, email, min, max } from "vee-validate/dist/rules";
 import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from "vee-validate";
-import { AxiosEncodedFormConfig } from "../common/AxiosHelper";
-import { LOCAL_STORAGE_JWT } from "../common/constant";
 
 setInteractionMode("eager");
 
@@ -117,40 +113,28 @@ export default Vue.extend({
     dialogText: ""
   }),
   methods: {
-    performLogin() {
-      axios
-        .post(
-          "/api/auth/login",
-          qs.stringify({
-            username: this.username,
-            password: this.password
-          }),
-          { ...AxiosEncodedFormConfig }
-        )
-        .then(resp => {
-          if (!resp.data.data || !resp.data.data.token) {
-            this.dialogText = resp.data.message;
-            this.dialogTitle = "Something went wrong...";
-            this.dialog = true;
-          } else {
-            const { token } = resp.data.data;
-            console.log(token);
-            localStorage.setItem(LOCAL_STORAGE_JWT, token);
-            this.$router.push({ path: "/browser" });
-          }
-        })
-        .catch(err => {
-          if (err && err.response) {
-            const resp = err.response;
-            this.dialogText = resp.data.message;
-            this.dialogTitle = "Something went wrong...";
-            this.dialog = true;
-          } else {
-            this.dialogText = "Unknown error, please check your Internet connection";
-            this.dialogTitle = "Something went wrong...";
-            this.dialog = true;
-          }
-        });
+    async performLogin() {
+      try {
+        const resp = await this.$api.loginUser(this.username, this.password);
+        if (!resp.data.data || !resp.data.data.token) {
+          this.dialogText = resp.data.message;
+          this.dialogTitle = "Something went wrong...";
+          this.dialog = true;
+        } else {
+          this.$router.push({ path: "/browser" });
+        }
+      } catch (err) {
+        if (err && err.response) {
+          const resp = err.response;
+          this.dialogText = resp.data.message;
+          this.dialogTitle = "Something went wrong...";
+          this.dialog = true;
+        } else {
+          this.dialogText = "Unknown error, please check your Internet connection";
+          this.dialogTitle = "Something went wrong...";
+          this.dialog = true;
+        }
+      }
     },
     closeDialog() {
       this.dialog = false;

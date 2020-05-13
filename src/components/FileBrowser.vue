@@ -134,15 +134,7 @@
 import path from "path";
 import vue2Dropzone from "vue2-dropzone";
 import "vue2-dropzone/dist/vue2Dropzone.min.css";
-import {
-  listDirectory,
-  createNewDirectory,
-  deleteFile,
-  deleteDirectory,
-  moveDirectory,
-  downloadFile
-} from "../common/FileBrowserApi";
-import { loginWithJwt } from "../common/AxiosHelper";
+import { SyncifyApiClient } from "../common/SyncifyApiClient";
 
 export default {
   components: {
@@ -170,7 +162,7 @@ export default {
     dropzoneOptions: {
       url: "/api/file",
       thumbnailWidth: 100,
-      headers: { ...loginWithJwt().headers },
+      headers: { ...SyncifyApiClient.loginWithJwt().headers },
       dictDefaultMessage: "Pick a new file",
       maxFiles: 1,
       maxfilesexceeded(file) {
@@ -191,7 +183,7 @@ export default {
       this.files.push({ type: "Directory", size: 0, name: ".." }); // Add the ".." (to parent directory)
       const currPath = this.path || "/";
       try {
-        const resp = await listDirectory(currPath);
+        const resp = await this.$api.listDirectory(currPath);
         const { data } = resp.data;
         data.files.forEach(element => {
           this.files.push({
@@ -248,7 +240,7 @@ export default {
           });
       } else {
         try {
-          await downloadFile(currPath, item.type, item.name);
+          await this.$api.downloadFile(currPath, item.type, item.name);
         } catch (err) {
           this.showErrorDialog(err);
         }
@@ -266,7 +258,7 @@ export default {
       console.log(this.newDirName);
       const currPath = path.join(this.path || "/", this.newDirName);
       try {
-        const resp = await createNewDirectory(currPath);
+        const resp = await this.$api.createNewDirectory(currPath);
         this.msgBarText = resp.data.message || "Directory created";
         this.msgBar = true;
         this.newDirDialog = false;
@@ -279,7 +271,9 @@ export default {
       const currPath = path.join(this.path || "/", item.name);
       try {
         const resp =
-          item.type === "Directory" ? await deleteDirectory(currPath) : await deleteFile(currPath);
+          item.type === "Directory"
+            ? await this.$api.deleteDirectory(currPath)
+            : await this.$api.deleteFile(currPath);
         this.msgBarText = resp.data.message || "Item deleted";
         this.msgBar = true;
         this.newDirDialog = false;
@@ -293,7 +287,7 @@ export default {
       const origPath = path.join(this.path || "/", item.name);
       try {
         if (item.type !== "Directory") throw new Error("Renaming files is not supported for now");
-        const resp = await moveDirectory(origPath, destPath);
+        const resp = await this.$api.moveDirectory(origPath, destPath);
         this.msgBarText = resp.data.message || "Item renamed";
         this.msgBar = true;
         this.newDirDialog = false;
