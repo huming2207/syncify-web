@@ -83,6 +83,9 @@
             <v-icon medium class="mr-2" @click="copyItem(item)">
               mdi-content-copy
             </v-icon>
+            <v-icon medium class="mr-2" @click="copyItem(item)">
+              mdi-content-cut
+            </v-icon>
             <v-icon medium class="mr-2" @click="deleteItem(item)">
               mdi-delete
             </v-icon>
