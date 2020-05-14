@@ -235,15 +235,15 @@ export default {
     },
     async openItem(item) {
       const currPath = path.join(this.path || "/", item.name);
-      if (item.type === "Directory") {
-        this.path = currPath;
-        await this.loadTable();
-      } else {
-        try {
+      try {
+        if (item.type === "Directory") {
+          this.path = currPath;
+          await this.loadTable();
+        } else {
           await this.$api.downloadFile(currPath, item.type, item.name);
-        } catch (err) {
-          this.showErrorDialog(err);
         }
+      } catch (err) {
+        this.showErrorDialog(err);
       }
     },
     updateDropzoneUrl() {
