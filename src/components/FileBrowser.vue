@@ -65,6 +65,24 @@
                 </v-card-actions>
               </v-card>
             </v-dialog>
+            <v-btn
+              color="warning"
+              dark
+              class="mb-2 ml-2 text-center"
+              @click="performCopy()"
+              v-if="itemToCopy !== null"
+            >
+              Paste to here
+            </v-btn>
+            <v-btn
+              color="warning"
+              dark
+              class="mb-2 ml-2 text-center"
+              @click="performMove()"
+              v-if="itemToMove !== null"
+            >
+              Move to here
+            </v-btn>
           </v-toolbar>
         </template>
         <template v-slot:item.actions="{ item }">
@@ -80,10 +98,10 @@
                 <v-text-field v-model="newName" label="Rename" single-line counter></v-text-field>
               </template>
             </v-edit-dialog>
-            <v-icon medium class="mr-2" @click="copyItem(item)">
+            <v-icon medium class="mr-2" @click="selectItemToCopy(item)" v-if="itemToCopy === null">
               mdi-content-copy
             </v-icon>
-            <v-icon medium class="mr-2" @click="copyItem(item)">
+            <v-icon medium class="mr-2" @click="selectItemToMove(item)" v-if="itemToMove === null">
               mdi-content-cut
             </v-icon>
             <v-icon medium class="mr-2" @click="deleteItem(item)">
@@ -156,6 +174,8 @@ export default {
       { text: "Actions", value: "actions", sortable: false }
     ],
     path: "",
+    itemToCopy: null,
+    itemToMove: null,
     files: [],
     unauthorised: false,
     uploadDialog: false,
@@ -227,7 +247,8 @@ export default {
         this.unauthorised = resp.status === 401;
       } else {
         console.error(err);
-        this.errorDialogText = "Unknown error, please check your Internet connection";
+        this.errorDialogText =
+          err.message || "Unknown error, please check your Internet connection";
         this.errorDialogTitle = "Something went wrong...";
         this.errorDialog = true;
       }
@@ -302,8 +323,44 @@ export default {
       } catch (err) {
         this.showErrorDialog(err);
       }
+    },
+    selectItemToCopy(item) {
+      if (item.type === "Directory") {
+        this.showErrorDialog(new Error("Copying directory is not supported for now"));
+      } else {
+        this.itemToCopy = { path: path.join(this.path || "/", item.name), item };
+      }
+    },
+    selectItemToMove(item) {
+      this.itemToMove = { path: path.join(this.path || "/", item.name), item };
+    },
+    async performMove() {
+      let resp;
+      const dest = path.join(this.path || "/");
+      if (this.itemToMove.item.type === "Directory") {
+        resp = await this.$api.moveDirectory(this.itemToMove.path, dest);
+      } else {
+        resp = await this.$api.moveFile(this.itemToMove.path, dest);
+      }
+      this.msgBarText = resp.data.message || "Item moved";
+      this.msgBar = true;
+      this.itemToMove = null;
+      await this.loadTable();
+    },
+    async performCopy() {
+      if (this.itemToCopy.item.type === "Directory") {
+        this.showErrorDialog(new Error("Copying directory is not supported for now"));
+        return;
+      }
+
+      const dest = path.join(this.path || "/");
+      const resp = await this.$api.copyFile(this.itemToCopy.path, dest);
+
+      this.msgBarText = resp.data.message || "Item copied";
+      this.msgBar = true;
+      this.itemToCopy = null;
+      await this.loadTable();
     }
-    // copyItem(item) {},
   }
 };
 </script>
