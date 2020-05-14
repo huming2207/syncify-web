@@ -307,14 +307,13 @@ export default {
       }
     },
     async editItem(item, newName) {
-      const destPath = path.join(this.path || "/", newName);
       const origPath = path.join(this.path || "/", item.name);
       try {
         let resp = null;
         if (item.type !== "Directory") {
-          resp = await this.$api.moveFile(origPath, destPath);
+          resp = await this.$api.renameFile(origPath, newName);
         } else {
-          resp = await this.$api.moveDirectory(origPath, destPath);
+          resp = await this.$api.renameDirectory(origPath, newName);
         }
         this.msgBarText = resp.data.message || "Item renamed";
         this.msgBar = true;

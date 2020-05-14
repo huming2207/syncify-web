@@ -103,6 +103,19 @@ export class SyncifyApiClient {
     );
   };
 
+  public renameDirectory = async (item: string, name: string): Promise<AxiosResponse> => {
+    return axios.put(
+      "/api/path/rename",
+      qs.stringify({
+        item,
+        name
+      }),
+      {
+        headers: { ...this.encodedFormConfig.headers, ...SyncifyApiClient.loginWithJwt().headers }
+      }
+    );
+  };
+
   public copyFile = async (orig: string, dest: string): Promise<AxiosResponse> => {
     return axios.put(
       "/api/file/copy",
@@ -122,6 +135,19 @@ export class SyncifyApiClient {
       qs.stringify({
         orig,
         dest
+      }),
+      {
+        headers: { ...this.encodedFormConfig.headers, ...SyncifyApiClient.loginWithJwt().headers }
+      }
+    );
+  };
+
+  public renameFile = async (item: string, name: string): Promise<AxiosResponse> => {
+    return axios.put(
+      "/api/file/rename",
+      qs.stringify({
+        item,
+        name
       }),
       {
         headers: { ...this.encodedFormConfig.headers, ...SyncifyApiClient.loginWithJwt().headers }
