@@ -152,6 +152,7 @@ export default {
       { text: "Created at", value: "created", sortable: true },
       { text: "Actions", value: "actions", sortable: false }
     ],
+    path: "",
     files: [],
     unauthorised: false,
     uploadDialog: false,
@@ -175,9 +176,6 @@ export default {
       }
     }
   }),
-  props: {
-    path: String
-  },
   mounted() {
     this.loadTable();
   },
@@ -238,14 +236,8 @@ export default {
     async openItem(item) {
       const currPath = path.join(this.path || "/", item.name);
       if (item.type === "Directory") {
-        this.$router
-          .push({
-            path: "/browser",
-            query: { path: currPath }
-          })
-          .catch(() => {
-            return true; // Suppress errors here (useless)
-          });
+        this.path = currPath;
+        await this.loadTable();
       } else {
         try {
           await this.$api.downloadFile(currPath, item.type, item.name);
