@@ -3,6 +3,7 @@ import VueRouter, { RouteConfig } from "vue-router";
 import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
 import FileBrowser from "../views/Browser.vue";
+import User from "../views/User.vue";
 
 Vue.use(VueRouter);
 
@@ -24,6 +25,12 @@ const routes: Array<RouteConfig> = [
     name: "Browser",
     meta: { title: "File browser - Syncify" },
     component: FileBrowser
+  },
+  {
+    path: "/user",
+    name: "UserPortal",
+    meta: { title: "File browser - Syncify" },
+    component: User
   },
   {
     path: "/about",
