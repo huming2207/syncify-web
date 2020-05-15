@@ -34,5 +34,8 @@ npm run build
 npm run lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Docker setup
+
+1. Run this to build docker image: `docker build -t syncify-web .`
+2. Then do `docker run -p 80:80 syncify-web`
+3. Enjoy!
