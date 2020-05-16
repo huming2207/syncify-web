@@ -1,9 +1,6 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
-import Login from "../views/Login.vue";
-import Register from "../views/Register.vue";
 import FileBrowser from "../views/Browser.vue";
-import User from "../views/User.vue";
 
 Vue.use(VueRouter);
 
@@ -12,13 +9,13 @@ const routes: Array<RouteConfig> = [
     path: "/",
     name: "Login",
     meta: { title: "Login - Syncify" },
-    component: Login
+    component: () => import(/* webpackChunkName: "login" */ "../views/Login.vue")
   },
   {
     path: "/register",
     name: "Register",
     meta: { title: "Register - Syncify" },
-    component: Register
+    component: () => import(/* webpackChunkName: "register" */ "../views/Register.vue")
   },
   {
     path: "/browser",
@@ -30,7 +27,7 @@ const routes: Array<RouteConfig> = [
     path: "/user",
     name: "UserPortal",
     meta: { title: "File browser - Syncify" },
-    component: User
+    component: () => import(/* webpackChunkName: "user" */ "../views/User.vue")
   },
   {
     path: "/about",
