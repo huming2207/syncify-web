@@ -53,6 +53,12 @@ export class SyncifyApiClient {
     );
   };
 
+  public getUserInfo = async (): Promise<AxiosResponse> => {
+    return axios.get("/api/user/me", {
+      ...SyncifyApiClient.loginWithJwt()
+    });
+  };
+
   public listDirectory = async (currPath: string): Promise<AxiosResponse> => {
     return axios.get("/api/path", {
       params: {
