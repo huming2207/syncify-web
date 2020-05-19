@@ -59,6 +59,16 @@ export class SyncifyApiClient {
     });
   };
 
+  public changePassword = async (password: string): Promise<AxiosResponse> => {
+    return axios.put(
+      "/api/user/password",
+      qs.stringify({
+        password
+      }),
+      { headers: { ...this.encodedFormConfig.headers, ...SyncifyApiClient.loginWithJwt().headers } }
+    );
+  };
+
   public listDirectory = async (currPath: string): Promise<AxiosResponse> => {
     return axios.get("/api/path", {
       params: {
