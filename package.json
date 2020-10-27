@@ -12,7 +12,7 @@
     "axios": "0.19.2",
     "core-js": "3.6.5",
     "filesize": "6.1.0",
-    "luxon": "1.24.1",
+    "luxon": "1.25.0",
     "qs": "6.9.4",
     "vee-validate": "3.3.0",
     "vue": "2.6.11",
@@ -23,7 +23,7 @@
     "vuetify": "2.2.28"
   },
   "devDependencies": {
-    "@types/luxon": "1.24.0",
+    "@types/luxon": "1.25.0",
     "@types/qs": "6.9.2",
     "@typescript-eslint/eslint-plugin": "2.33.0",
     "@typescript-eslint/parser": "2.33.0",
